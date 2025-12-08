@@ -15,8 +15,14 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+      - name: Clean workspace
+        run: |
+          chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+        continue-on-error: true
+        
       - name: Checkout source code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # pin@v6.0.1
       - name: Add variables to environment file
