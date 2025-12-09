@@ -10,10 +10,19 @@ permissions:
 jobs:
   golangci:
     name: golangci-lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+      - name: Clean workspace
+        run: |
+          chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+        continue-on-error: true
+
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # pin@v6.0.1
+        with:
+          clean: true
       - name: Add variables to environment file
         run: cat ".github/env" >> "$GITHUB_ENV"
       - name: Setup Go

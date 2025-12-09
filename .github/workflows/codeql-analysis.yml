@@ -31,7 +31,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
 
     strategy:
       fail-fast: false
@@ -42,8 +42,17 @@ jobs:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
 
     steps:
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
     - name: Checkout repository
       uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # pin@v6.0.1
+      with:
+        clean: true
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
